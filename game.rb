@@ -2,11 +2,13 @@
 
 # Game class stores state of the hangman game
 class Game
-  def initialize(player, word, guess_count)
-    @player = player
+  def initialize(name, word)
+    @name = name
     @word = word
-    @guess_count = guess_count
+    @guess_count = 0
     @wrong_letters = []
     @word_progress = {}
   end
+
+  attr_reader :name, :word
 end

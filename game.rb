@@ -7,7 +7,7 @@ class Game
     @word = word
     @guess_count = 0
     @wrong_letters = []
-    @word_progress = {}
+    @word_progress = Array.new(word.length, '_')
   end
 
   attr_reader :name, :word

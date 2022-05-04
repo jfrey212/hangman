@@ -25,6 +25,7 @@ end
 def print_status(guessed_letters, guesses_left, word_progress)
   word_progress.each { |letter| print "#{letter} " }
   puts
+  puts
   puts "Guesses Remaining: #{guesses_left}"
   print 'Missed Letters: '
   puts
@@ -46,6 +47,7 @@ def game_loop(game, prompt)
         break
       else
         puts "\n\nYou lost the game!"
+        puts "The word is #{game.word}"
         prompt.keypress('Press any key to return to main menu')
         break
       end
@@ -86,12 +88,18 @@ loop do
     game = Game.new(word_list[rand(word_list.length + 1)])
     game_loop(game, prompt)
   when 'Load a Game'
-    save_files = Dir.entries('save').select { |file| file =~ /json/ }
-    filename = prompt.select('Choose a saved game file', save_files)
-    game = Game.new('')
-    game.load_game("save/#{filename}")
-    system('clear')
-    game_loop(game, prompt)
+    if Dir.entries('save') == ["..", "."]
+      puts "No save files found"
+      prompt.keypress('Press any key to return to main menu')
+      next
+    else
+      save_files = Dir.entries('save').select { |file| file =~ /json/ }
+      filename = prompt.select('Choose a saved game file', save_files)
+      game = Game.new('')
+      game.load_game("save/#{filename}")
+      system('clear')
+      game_loop(game, prompt)
+    end
   when 'Quit'
     puts 'Goodbye'
     sleep(1)

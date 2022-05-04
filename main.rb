@@ -88,7 +88,7 @@ loop do
     game = Game.new(word_list[rand(word_list.length + 1)])
     game_loop(game, prompt)
   when 'Load a Game'
-    if Dir.entries('save') == ["..", "."]
+    if Dir.entries('save').length <= 2
       puts "No save files found"
       prompt.keypress('Press any key to return to main menu')
       next

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 # Game class stores state of the hangman game
 class Game
   def initialize(word)
@@ -32,6 +34,27 @@ class Game
     end
   end
 
-  def save_game; end
+  def save_game
+    save = {
+        :name => @name,
+        :word => @word,
+        :count => @count,
+        :wrong_guesses => @wrong_guesses,
+        :progress => @progress
+      }.to_json
+    filename = "save/#{@name}.json"
+    File.open(filename, 'w') do |file|
+      file.puts save
+    end
+  end
 
+  def load_game(file)
+    data = File.read(file)
+    game_data = JSON.parse(data, {:symbolize_names => true})
+    @name = game_data[:name]
+    @word = game_data[:word]
+    @count = game_data[:count]
+    @wrong_guesses = game_data[:wrong_guesses]
+    @progress = game_data[:progress]
+  end
 end

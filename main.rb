@@ -57,12 +57,13 @@ def game_loop(game, prompt)
     when 'Guess'
       char = prompt.ask('Guess a letter: ') do |q|
         q.modify :down
-        q.validate(/[a-z]/)
+        q.validate(/^[a-z]{1}$/, 'Your guess must be one letter')
       end
       game.update_progress(char)
       system('clear')
     when 'Save'
       game.name = prompt.ask('Enter a name for this saved game')
+      game.save_game
       break
     when 'Quit'
       break
@@ -77,7 +78,7 @@ prompt = TTY::Prompt.new
 loop do
   system('clear')
   puts "Welcome to Hangman!\n\n"
-  selection = prompt.select('Choose a game option:', ['New Game', 'Saved Game', 'Quit'])
+  selection = prompt.select('Choose a game option:', ['New Game', 'Load a Game', 'Quit'])
 
   case selection
   when 'New Game'
@@ -85,7 +86,12 @@ loop do
     game = Game.new(word_list[rand(word_list.length + 1)])
     game_loop(game, prompt)
   when 'Load a Game'
-    puts 'You chose saved game'
+    save_files = Dir.entries('save').select { |file| file =~ /json/ }
+    filename = prompt.select('Choose a saved game file', save_files)
+    game = Game.new('')
+    game.load_game("save/#{filename}")
+    system('clear')
+    game_loop(game, prompt)
   when 'Quit'
     puts 'Goodbye'
     sleep(1)

@@ -2,29 +2,36 @@
 
 # Game class stores state of the hangman game
 class Game
-  def initialize
-    @name = name
+  def initialize(word)
+    @name = ''
     @word = word
     @count = 7
-    @guessed_letters = []
-    @word_progress = Array.new(word.length, '_')
+    @wrong_guesses = []
+    @progress = Array.new(word.length, '_')
+    @gameover = false
   end
 
-  attr_accessor :count, :guessed_letters, :word_progress, :name, :word
+  attr_accessor :wrong_guesses, :name, :count, :progress, :word, :gameover
 
-  def check_guess(guess)
+  def update_progress(guess)
+    if @word.include?(guess)
+      @progress.each.with_index do |char, i|
+        if guess == @word[i]
+          @progress[i] = guess
+        else
+          next
+        end
+      end
+    else
+      @count -= 1
+      @wrong_guesses << guess unless @wrong_guesses.include?(guess)
+    end
 
-  end
-
-  def check_end_game
-    if count == 0 && @word_progress.join != @word
-      return 'lose'
-    elsif @word_progress.join == @word
-      return 'win'
+    if @count.zero? || @progress.join == @word
+      @gameover = true
     end
   end
 
-  def save_game;end
+  def save_game; end
 
-  def load_game;end
 end

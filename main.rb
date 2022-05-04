@@ -3,7 +3,6 @@
 require './game'
 require 'tty-prompt'
 
-prompt = TTY::Prompt.new
 # Load the dictionary and select words between 5 and 12 characters
 # The resulting array of words contains 7558 words
 def dictionary_load
@@ -33,10 +32,46 @@ def print_status(guessed_letters, guesses_left, word_progress)
   puts
 end
 
-def game_loop
+def game_loop(game, prompt)
+  loop do
+    print_hangman(game.count)
+    puts
+    print_status(game.wrong_guesses, game.count, game.progress)
+    puts
+
+    if game.gameover
+      if game.progress.join('') == game.word
+        puts "\n\nYou won the game!"
+        prompt.keypress('Press any key to return to main menu')
+        break
+      else
+        puts "\n\nYou lost the game!"
+        prompt.keypress('Press any key to return to main menu')
+        break
+      end
+    end
+
+    choice = prompt.select('Choose', %w( Guess Save Quit))
+
+    case choice
+    when 'Guess'
+      char = prompt.ask('Guess a letter: ') do |q|
+        q.modify :down
+        q.validate(/[a-z]/)
+      end
+      game.update_progress(char)
+      system('clear')
+    when 'Save'
+      game.name = prompt.ask('Enter a name for this saved game')
+      break
+    when 'Quit'
+      break
+    end
+  end
 end
 
 word_list = dictionary_load
+prompt = TTY::Prompt.new
 
 # main game loop
 loop do
@@ -48,41 +83,7 @@ loop do
   when 'New Game'
     system('clear')
     game = Game.new(word_list[rand(word_list.length + 1)])
-    loop do
-      print_hangman(game.count)
-      puts
-      print_status(game.wrong_guesses, game.count, game.progress)
-      puts
-
-      if game.gameover
-        if game.progress.join('') == game.word
-          puts "\n\nYou won the game!"
-          prompt.keypress('Press any key to return to main menu')
-          break
-        else
-          puts "\n\nYou lost the game!"
-          prompt.keypress('Press any key to return to main menu')
-          break
-        end
-      end
-
-      choice = prompt.select('Choose', %w( Guess Save Quit))
-
-      case choice
-      when 'Guess'
-        char = prompt.ask('Guess a letter: ') do |q|
-          q.modify :down
-          q.validate(/[a-z]/)
-        end
-        game.update_progress(char)
-        system('clear')
-      when 'Save'
-        game.name = prompt.ask('Enter a name for this saved game')
-        break
-      when 'Quit'
-        break
-      end
-    end
+    game_loop(game, prompt)
   when 'Load a Game'
     puts 'You chose saved game'
   when 'Quit'

@@ -59,7 +59,12 @@ def game_loop(game, prompt)
         q.modify :down
         q.validate(/^[a-z]{1}$/, 'Your guess must be one letter')
       end
-      game.update_progress(char)
+      if game.wrong_guesses.include?(char)
+        puts 'You already guessed that letter!'
+        prompt.keypress('Press any key to continue')
+      else
+        game.update_progress(char)
+      end
       system('clear')
     when 'Save'
       game.name = prompt.ask('Enter a name for this saved game')

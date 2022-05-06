@@ -17,31 +17,29 @@ class Game
 
   def update_progress(guess)
     if @word.include?(guess)
-      @progress.each.with_index do |char, i|
-        if guess == @word[i]
-          @progress[i] = guess
-        else
-          next
-        end
+      @progress.each.with_index do |_char, i|
+        next unless guess == @word[i]
+
+        @progress[i] = guess
       end
     else
       @count -= 1
       @wrong_guesses << guess unless @wrong_guesses.include?(guess)
     end
 
-    if @count.zero? || @progress.join == @word
-      @gameover = true
-    end
+    return unless @count.zero? || @progress.join == @word
+
+    @gameover = true
   end
 
   def save_game
     save = {
-        :name => @name,
-        :word => @word,
-        :count => @count,
-        :wrong_guesses => @wrong_guesses,
-        :progress => @progress
-      }.to_json
+      name: @name,
+      word: @word,
+      count: @count,
+      wrong_guesses: @wrong_guesses,
+      progress: @progress
+    }.to_json
     filename = "save/#{@name}.json"
     File.open(filename, 'w') do |file|
       file.puts save
@@ -50,7 +48,7 @@ class Game
 
   def load_game(file)
     data = File.read(file)
-    game_data = JSON.parse(data, {:symbolize_names => true})
+    game_data = JSON.parse(data, { symbolize_names: true })
     @name = game_data[:name]
     @word = game_data[:word]
     @count = game_data[:count]

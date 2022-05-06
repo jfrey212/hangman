@@ -43,17 +43,15 @@ def game_loop(game, prompt)
     if game.gameover
       if game.progress.join('') == game.word
         puts "\n\nYou won the game!"
-        prompt.keypress('Press any key to return to main menu')
-        break
       else
         puts "\n\nYou lost the game!"
         puts "The word is #{game.word}"
-        prompt.keypress('Press any key to return to main menu')
-        break
       end
+      prompt.keypress('Press any key to return to main menu')
+      break
     end
 
-    choice = prompt.select('Choose', %w( Guess Save Quit))
+    choice = prompt.select('Choose', %w[Guess Save Quit])
 
     case choice
     when 'Guess'
@@ -89,7 +87,7 @@ loop do
     game_loop(game, prompt)
   when 'Load a Game'
     if Dir.entries('save').length <= 2
-      puts "No save files found"
+      puts 'No save files found'
       prompt.keypress('Press any key to return to main menu')
       next
     else
